@@ -131,6 +131,7 @@ def get_urlpatterns():
     routes += url_patterns_from_builtin_module('otree.views.mturk')
     routes += url_patterns_from_builtin_module('otree.views.export')
     routes += url_patterns_from_builtin_module('otree.views.rest')
+    routes += url_patterns_from_builtin_module('otree.views.ext_rest')
     routes += websocket_routes
     routes += [
         Mount('/static', app=static_files_app, name="static",),
