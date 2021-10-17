@@ -1,6 +1,8 @@
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
 import otree
+from otree.channels.utils import auto_advance_group
+from otree.database import db
 from otree.models import Participant
 from .cbv import BaseRESTView
 
@@ -52,3 +54,28 @@ class RESTSessionParticipants(BaseRESTView):
         participants = Participant.objects_filter(_session_code=code, visited=True)
         data = otree.export.get_rows_for_monitor(participants)
         return JSONResponse(data)
+
+
+def advance_participant(participant):
+    page_index = participant._index_in_pages
+
+    if page_index == 0:
+        participant.initialize(None)
+        participant._visit_current_page()
+    else:
+        participant._submit_current_page()
+        participant._visit_current_page()
+
+        otree.channels.utils.sync_group_send(
+            group=auto_advance_group(participant.code), data={"auto_advanced": True}
+        )
+
+
+class AdvanceSessionParticipantView(BaseRESTView):
+    url_pattern = "/api/participants/{code}/advance"
+
+    def post(self):
+        code = self.request.path_params["code"]
+        participant = db.get_or_404(Participant, code=code)
+        advance_participant(participant)
+        return Response()
