@@ -34,6 +34,10 @@ def run_uvicorn(addr, port, *, is_devserver):
 
 
 def get_addr_port(cli_addrport, is_devserver=False):
+
+    def get_ipv6_and_port(groups):
+        return ':'.join(groups[:-1]), groups[-1]
+
     default_addr = '127.0.0.1' if is_devserver else '0.0.0.0'
     default_port = os.environ.get('PORT') or 8000
     if not cli_addrport:
@@ -41,6 +45,8 @@ def get_addr_port(cli_addrport, is_devserver=False):
     parts = cli_addrport.split(':')
     if len(parts) == 1:
         return default_addr, parts[0]
+    elif len(parts) > 2:
+        return get_ipv6_and_port(parts)
     return parts
 
 
