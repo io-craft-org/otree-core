@@ -1,10 +1,14 @@
+from io import StringIO
+
 from starlette.responses import JSONResponse, Response
 
 import otree
+import otree.export
 from otree.channels.utils import auto_advance_group
 from otree.database import db
 from otree.models import Participant
 from .cbv import BaseRESTView
+from .export import get_csv_http_response
 
 
 class RESTSessionParticipants(BaseRESTView):
@@ -79,3 +83,14 @@ class AdvanceSessionParticipantView(BaseRESTView):
         participant = db.get_or_404(Participant, code=code)
         advance_participant(participant)
         return Response()
+
+
+class ExportSession(BaseRESTView):
+
+    url_pattern = "/api/sessions/{code}/export"
+
+    def get(self):
+        code = self.request.path_params["code"]
+        buf = StringIO()
+        otree.export.export_wide(buf, session_code=code)
+        return get_csv_http_response(buf, f"session_{code}_data")
