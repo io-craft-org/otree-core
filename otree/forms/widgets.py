@@ -52,6 +52,12 @@ class IntegerWidget(BaseWidget):
         yield f'<input type="number" class="form-control" %s>' % self.attrs()
 
 
+class SliderWidget(BaseWidget):
+
+    def get_html_fragments(self):
+        yield f'<input type="range" class="form-range" %s>' % self.attrs()
+
+
 class FloatWidget(BaseWidget):
     """
     use input type='text' instead of 'number' because:
