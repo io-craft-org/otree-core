@@ -58,6 +58,19 @@ class SliderWidget(BaseWidget):
         yield f'<input type="range" class="form-range" %s>' % self.attrs()
 
 
+class SliderWidgetWithValue(BaseWidget):
+
+    def get_html_fragments(self):
+        yield f'<div class="input-group slider" data-slider="">'
+        yield f'    <div class="slider-container">'
+        yield f'        <input type="range" class="form-range" %s>' % self.attrs()
+        yield f'        <div class="input-group-append">'
+        yield f'            <span class="input-group-text" data-slider-value="" title="current value"></span>'
+        yield f'        </div>'
+        yield f'    </div>'
+        yield f'</div>'
+
+
 class FloatWidget(BaseWidget):
     """
     use input type='text' instead of 'number' because:

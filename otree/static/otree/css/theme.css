@@ -25,6 +25,13 @@ select.form-control {
     max-width: 200px;
 }
 
+/* This is to center the input range vertically inside the input group. */
+.slider-container {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
 /* Dropdowns shall occupy only the needed space. */
 select.form-select {
     width: auto;
