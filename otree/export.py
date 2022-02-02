@@ -316,7 +316,7 @@ def get_rows_for_wide_csv_round(app_name, round_number, sessions: List[Session])
     return rows
 
 
-def get_rows_for_csv(app_name):
+def get_rows_for_csv(app_name, session_code=None):
     # need to use app_name and not app_label because the app might have been
     # removed from SESSION_CONFIGS
     models_module = otree.common.get_models_module(app_name)
@@ -329,9 +329,12 @@ def get_rows_for_csv(app_name):
         for Model in [Player, Group, Subsession, Participant, Session]
     }
 
-    session_ids = values_flat(dbq(Subsession), Subsession.session_id)
+    if session_code:
+        session_ids = [Session.objects_first(code=session_code).id]
+    else:
+        session_ids = values_flat(dbq(Subsession), Subsession.session_id)
 
-    players = Player.values_dicts(order_by='id')
+    players = Player.values_dicts(Player.session_id.in_(session_ids), order_by='id')
 
     value_dicts = dict(
         group={row['id']: row for row in Group.values_dicts()},
@@ -426,8 +429,8 @@ def export_wide(fp, session_code=None):
     _export_csv(fp, rows)
 
 
-def export_app(app_name, fp):
-    rows = get_rows_for_csv(app_name)
+def export_app(app_name, fp, session_code=None):
+    rows = get_rows_for_csv(app_name, session_code)
     _export_csv(fp, rows)
 
 

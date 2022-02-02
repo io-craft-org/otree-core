@@ -92,5 +92,5 @@ class ExportSession(BaseRESTView):
     def get(self):
         code = self.request.path_params["code"]
         buf = StringIO()
-        otree.export.export_wide(buf, session_code=code)
+        otree.export.export_app(app_name="mineurs_age_v2", fp=buf, session_code=code)
         return get_csv_http_response(buf, f"session_{code}_data")
