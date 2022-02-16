@@ -87,10 +87,11 @@ class AdvanceSessionParticipantView(BaseRESTView):
 
 class ExportSession(BaseRESTView):
 
-    url_pattern = "/api/sessions/{code}/export"
+    url_pattern = "/api/sessions/{code}/export/app/{app_name}"
 
     def get(self):
         code = self.request.path_params["code"]
+        app_name = self.request.path_params["app_name"]
         buf = StringIO()
-        otree.export.export_app(app_name="mineurs_age_v2", fp=buf, session_code=code)
+        otree.export.export_app(app_name=app_name, fp=buf, session_code=code)
         return get_csv_http_response(buf, f"session_{code}_data")
